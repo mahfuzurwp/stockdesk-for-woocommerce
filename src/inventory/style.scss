@@ -1,0 +1,50 @@
+@import '@wordpress/dataviews/build-style/style.css';
+
+.sdfw-shell__content {
+	.sdfw-inventory-notice {
+		margin: 0 0 16px;
+	}
+
+	.dataviews-wrapper {
+		background: #fff;
+	}
+
+	.sdfw-stock-edit-modal {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		min-width: min(420px, 100%);
+	}
+
+	.sdfw-stock-edit-modal__actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: 8px;
+		margin-top: 8px;
+	}
+
+	.sdfw-inventory-product {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		min-width: 0;
+		max-width: 320px;
+
+		.sdfw-inventory-product__name {
+			font-weight: 600;
+			line-height: 1.3;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		.sdfw-inventory-product__meta {
+			color: #646970;
+			font-size: 12px;
+			line-height: 1.35;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+	}
+}

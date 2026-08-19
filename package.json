@@ -1,0 +1,26 @@
+{
+  "name": "stockdesk-for-woocommerce",
+  "version": "1.0.0",
+  "description": "StockDesk for WooCommerce - Inventory Management",
+  "main": "build/admin.js",
+  "scripts": {
+    "build": "wp-scripts build",
+    "package": "bash bin/package.sh",
+    "start": "wp-scripts start",
+    "check-engines": "wp-scripts check-engines",
+    "lint:css": "wp-scripts lint-style",
+    "lint:js": "wp-scripts lint-js",
+    "format": "wp-scripts format"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "32.6.0"
+  },
+  "dependencies": {
+    "@tabler/icons-react": "^3.45.0",
+    "@wordpress/api-fetch": "7.50.0",
+    "@wordpress/components": "36.1.0",
+    "@wordpress/dataviews": "16.0.1",
+    "@wordpress/element": "8.2.0",
+    "@wordpress/i18n": "6.23.0"
+  }
+}

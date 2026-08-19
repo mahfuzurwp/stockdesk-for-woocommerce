@@ -1,0 +1,12 @@
+/.git
+/.gitignore
+/.distignore
+/.DS_Store
+/node_modules
+/src
+/bin
+/dist
+/package.json
+/package-lock.json
+/webpack.config.js
+/*.zip
