@@ -6,8 +6,14 @@ const bundledPackages = [
     '@wordpress/components',
     '@wordpress/dataviews',
     '@wordpress/element',
-    '@wordpress/i18n',
 ];
+
+// @wordpress/i18n is intentionally left out of bundledPackages: it must stay
+// externalized to the "wp-i18n" script handle so wp_set_script_translations()
+// can supply translations to the same runtime instance this bundle calls
+// __()/sprintf() on. Bundling a private copy would silently break translation
+// loading — the calls would run against an isolated instance WordPress never
+// sends locale data to.
 
 // Strip the default-configured DependencyExtractionWebpackPlugin instance —
 // we're replacing it with one that knows to bundle our chosen packages.

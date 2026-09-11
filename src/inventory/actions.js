@@ -121,7 +121,7 @@ function StockEditModal( {
 						message:
 							result?.message ||
 							sprintf(
-								/* translators: %d: updated count */
+								/* translators: %d: number of updated products */
 								__(
 									'Bulk stock update complete. Updated %d items.',
 									'stockdesk-for-woocommerce'

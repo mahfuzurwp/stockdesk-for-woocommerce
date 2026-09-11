@@ -137,6 +137,8 @@ final class SDFW_Admin_App {
 			true
 		);
 
+		wp_set_script_translations( 'sdfw-admin-app', 'stockdesk-for-woocommerce', SDFW_PLUGIN_PATH . 'languages' );
+
 		$css_path    = SDFW_PLUGIN_PATH . 'build/style-admin.css';
 		$css_version = $asset['version'];
 		if ( file_exists( $css_path ) ) {

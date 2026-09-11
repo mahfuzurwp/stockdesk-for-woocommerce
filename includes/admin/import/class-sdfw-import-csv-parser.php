@@ -100,7 +100,8 @@ final class SDFW_Import_Csv_Parser {
 		$headers = $this->parse_csv_line( array_shift( $lines ), $delimiter );
 		$headers = array_map(
 			function ( $header, $index ) {
-				return $header ?: sprintf( /* translators: %d: Column number */ __( 'Column %d', 'stockdesk-for-woocommerce' ), $index + 1 );
+				/* translators: %d: Column number */
+				return $header ?: sprintf( __( 'Column %d', 'stockdesk-for-woocommerce' ), $index + 1 );
 			},
 			$headers,
 			array_keys( $headers )

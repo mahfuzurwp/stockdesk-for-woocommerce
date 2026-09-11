@@ -400,6 +400,7 @@ const ExportForm = () => {
 				</ol>
 				<p className="sdfw-step-status" aria-live="polite">
 					{ sprintf(
+						/* translators: 1: current step number, 2: total step count, 3: current step label */
 						__( 'Step %1$d of %2$d: %3$s', 'stockdesk-for-woocommerce' ),
 						currentIndex + 1,
 						steps.length,
