@@ -2,7 +2,7 @@
 /**
  * Plugin uninstall handler.
  *
- * @package MahfuzStockDeskInventoryWorkspace
+ * @package StockDesk for WooCommerce
  */
 
 declare(strict_types=1);
@@ -11,12 +11,12 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
 
-$users = get_users(
+$sdfw_users = get_users(
 	array(
 		'fields' => 'ID',
 	)
 );
 
-foreach ( $users as $user_id ) {
-	delete_user_option( (int) $user_id, 'sdfw_inventory_per_page' );
+foreach ( $sdfw_users as $sdfw_user_id ) {
+	delete_user_option( (int) $sdfw_user_id, 'sdfw_inventory_per_page' );
 }

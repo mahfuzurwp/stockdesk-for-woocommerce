@@ -11,6 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Import row processor.
+ */
 final class SDFW_Import_Processor {
 
 	/**
@@ -58,18 +61,19 @@ final class SDFW_Import_Processor {
 	/**
 	 * Process a batch of import rows.
 	 *
-	 * @param string $session_id Session ID.
-	 * @param array  $batch      Batch of rows.
-	 * @param array  $mapping    Field mapping.
-	 * @param array  $headers    CSV headers.
+	 * @param string $session_id  Session ID.
+	 * @param array  $batch       Batch of rows.
+	 * @param array  $mapping     Field mapping.
+	 * @param array  $headers     CSV headers.
 	 * @param int    $batch_index Batch index.
+	 * @param int    $row_offset  Global row offset for this batch.
 	 * @return void
 	 */
 	public function process_batch( string $session_id, array $batch, array $mapping, array $headers, int $batch_index, int $row_offset = 0 ): void {
 		$results = array();
 
 		foreach ( $batch as $row_index => $row ) {
-			$row_num     = $row_offset + (int) $row_index + 1;
+			$row_num   = $row_offset + (int) $row_index + 1;
 			$results[] = $this->process_row( $row, $mapping, $headers, $session_id, $row_num );
 		}
 
@@ -87,9 +91,9 @@ final class SDFW_Import_Processor {
 	 * @return array Import result.
 	 */
 	private function process_row( array $row, array $mapping, array $headers, string $session_id, int $row_num ): array {
-		$validator = SDFW_Import_Validator::instance();
-		$parsed    = $validator->parse_row( $mapping, $headers, $row );
-		$sku       = $parsed['sku'];
+		$validator  = SDFW_Import_Validator::instance();
+		$parsed     = $validator->parse_row( $mapping, $headers, $row );
+		$sku        = $parsed['sku'];
 		$field_data = $parsed['row_data'];
 
 		if ( ! empty( $parsed['errors'] ) ) {

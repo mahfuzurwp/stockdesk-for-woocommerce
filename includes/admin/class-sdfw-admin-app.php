@@ -205,6 +205,7 @@ final class SDFW_Admin_App {
 	 * @return string
 	 */
 	private function get_initial_path(): string {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only SPA route, not a state-changing action; value is validated against an allow-list below.
 		$path = isset( $_GET['path'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['path'] ) ) : '/inventory';
 		if ( ! str_starts_with( $path, '/' ) ) {
 			$path = '/' . $path;

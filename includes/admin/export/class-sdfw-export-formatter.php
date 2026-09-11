@@ -124,7 +124,7 @@ class SDFW_Export_Formatter {
 	 * @return string
 	 */
 	public function to_csv( array $products, bool $include_optional = false, string $delimiter = ',' ): string {
-		$output = '';
+		$output  = '';
 		$output .= "\xEF\xBB\xBF";
 
 		$columns = $this->get_columns( $include_optional );
@@ -157,9 +157,9 @@ class SDFW_Export_Formatter {
 
 		foreach ( $fields as $field ) {
 			if ( strpos( $field, $delimiter ) !== false ||
-				 strpos( $field, $enclosure ) !== false ||
-				 strpos( $field, "\n" ) !== false ||
-				 strpos( $field, "\r" ) !== false ) {
+				strpos( $field, $enclosure ) !== false ||
+				strpos( $field, "\n" ) !== false ||
+				strpos( $field, "\r" ) !== false ) {
 				$field = $enclosure . str_replace( $enclosure, $enclosure . $enclosure, $field ) . $enclosure;
 			}
 			$line .= $field . $delimiter;

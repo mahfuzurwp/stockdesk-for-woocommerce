@@ -5,12 +5,15 @@
  * @package StockDesk for WooCommerce
  */
 
-declare( strict_types=1 );
+declare(strict_types=1);
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Import handler class.
+ */
 final class SDFW_Import {
 
 	/**
@@ -90,6 +93,7 @@ final class SDFW_Import {
 		$this->verify_nonce();
 		$this->verify_capability();
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce and capability verified above via verify_nonce()/verify_capability().
 		if ( ! isset( $_FILES['csv_file'] ) ) {
 			SDFW_Ajax_Response::send_error(
 				__( 'No file uploaded.', 'stockdesk-for-woocommerce' ),
@@ -97,7 +101,8 @@ final class SDFW_Import {
 			);
 		}
 
-		$file = $_FILES['csv_file'];
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Verified above; file upload data is validated (type/size/upload error) before use, not written directly.
+		$file      = $_FILES['csv_file'];
 		$validator = SDFW_Import_Validator::instance();
 
 		if ( UPLOAD_ERR_OK !== (int) ( $file['error'] ?? UPLOAD_ERR_NO_FILE ) ) {
@@ -130,6 +135,7 @@ final class SDFW_Import {
 			);
 		}
 
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Reads the local upload's temp file, not a remote URL; wp_remote_get() does not apply.
 		$content = file_get_contents( $file['tmp_name'] );
 		if ( false === $content ) {
 			SDFW_Ajax_Response::send_error(
@@ -138,9 +144,9 @@ final class SDFW_Import {
 			);
 		}
 
-		$parser   = new SDFW_Import_Csv_Parser();
-		$mapper   = new SDFW_Import_Mapper();
-		$session  = new SDFW_Import_Session();
+		$parser  = new SDFW_Import_Csv_Parser();
+		$mapper  = new SDFW_Import_Mapper();
+		$session = new SDFW_Import_Session();
 
 		$parsed = $parser->parse( $content );
 		if ( is_wp_error( $parsed ) ) {
@@ -150,7 +156,7 @@ final class SDFW_Import {
 			);
 		}
 
-		$mapping = $mapper->detect_mapping( $parsed['headers'] );
+		$mapping      = $mapper->detect_mapping( $parsed['headers'] );
 		$session_data = $session->create( $parsed, $file );
 
 		wp_send_json_success(
@@ -173,7 +179,9 @@ final class SDFW_Import {
 		$this->verify_nonce();
 		$this->verify_capability();
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce and capability verified above via verify_nonce()/verify_capability().
 		$session_id = isset( $_POST['session_id'] ) ? sanitize_text_field( wp_unslash( $_POST['session_id'] ) ) : '';
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Verified above; decoded and sanitized field-by-field via SDFW_Import_Validator::sanitize_mapping() below.
 		$raw_mapping = isset( $_POST['mapping'] ) ? wp_unslash( $_POST['mapping'] ) : '';
 		$mapping     = is_string( $raw_mapping ) ? json_decode( $raw_mapping, true ) : (array) $raw_mapping;
 
@@ -188,7 +196,7 @@ final class SDFW_Import {
 			);
 		}
 
-		$session = new SDFW_Import_Session();
+		$session      = new SDFW_Import_Session();
 		$session_data = $session->get( $session_id );
 
 		if ( false === $session_data ) {
@@ -198,9 +206,9 @@ final class SDFW_Import {
 			);
 		}
 
-		$validator     = SDFW_Import_Validator::instance();
-		$sanitized     = $validator->sanitize_mapping( $mapping );
-		$errors        = $validator->validate_mapping( $sanitized );
+		$validator = SDFW_Import_Validator::instance();
+		$sanitized = $validator->sanitize_mapping( $mapping );
+		$errors    = $validator->validate_mapping( $sanitized );
 
 		if ( ! empty( $errors ) ) {
 			SDFW_Ajax_Response::send_error(
@@ -229,6 +237,7 @@ final class SDFW_Import {
 		$this->verify_nonce();
 		$this->verify_capability();
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce and capability verified above via verify_nonce()/verify_capability().
 		$session_id = isset( $_POST['session_id'] ) ? sanitize_text_field( wp_unslash( $_POST['session_id'] ) ) : '';
 
 		if ( empty( $session_id ) ) {
@@ -238,7 +247,7 @@ final class SDFW_Import {
 			);
 		}
 
-		$session = new SDFW_Import_Session();
+		$session      = new SDFW_Import_Session();
 		$session_data = $session->get( $session_id );
 
 		if ( false === $session_data ) {
@@ -248,9 +257,9 @@ final class SDFW_Import {
 			);
 		}
 
-		$mapping   = $session_data['mapping'] ?? array();
-		$rows      = $session_data['rows'] ?? array();
-		$headers   = $session_data['headers'] ?? array();
+		$mapping = $session_data['mapping'] ?? array();
+		$rows    = $session_data['rows'] ?? array();
+		$headers = $session_data['headers'] ?? array();
 
 		$preview     = array();
 		$valid_count = 0;
@@ -293,11 +302,11 @@ final class SDFW_Import {
 
 		wp_send_json_success(
 			array(
-				'valid_count'   => $valid_count,
-				'error_count'   => $error_count,
-				'preview'       => $preview,
-				'warnings'      => $warnings,
-				'total_rows'    => count( $rows ),
+				'valid_count' => $valid_count,
+				'error_count' => $error_count,
+				'preview'     => $preview,
+				'warnings'    => $warnings,
+				'total_rows'  => count( $rows ),
 			)
 		);
 	}
@@ -318,6 +327,7 @@ final class SDFW_Import {
 			);
 		}
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce and capability verified above via verify_nonce()/verify_capability().
 		$session_id = isset( $_POST['session_id'] ) ? sanitize_text_field( wp_unslash( $_POST['session_id'] ) ) : '';
 
 		if ( empty( $session_id ) ) {
@@ -327,7 +337,7 @@ final class SDFW_Import {
 			);
 		}
 
-		$session = new SDFW_Import_Session();
+		$session      = new SDFW_Import_Session();
 		$session_data = $session->get( $session_id );
 
 		if ( false === $session_data ) {
@@ -387,6 +397,7 @@ final class SDFW_Import {
 		$this->verify_nonce();
 		$this->verify_capability();
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce and capability verified above via verify_nonce()/verify_capability().
 		$session_id = isset( $_POST['session_id'] ) ? sanitize_text_field( wp_unslash( $_POST['session_id'] ) ) : '';
 
 		if ( empty( $session_id ) ) {
@@ -396,8 +407,8 @@ final class SDFW_Import {
 			);
 		}
 
-		$session   = new SDFW_Import_Session();
-		$progress  = $session->get_progress( $session_id );
+		$session  = new SDFW_Import_Session();
+		$progress = $session->get_progress( $session_id );
 
 		if ( empty( $progress ) ) {
 			SDFW_Ajax_Response::send_error(
@@ -437,5 +448,4 @@ final class SDFW_Import {
 		$processor = SDFW_Import_Processor::instance();
 		$processor->process_batch( $session_id, $batch, $mapping, $headers, $batch_index, $row_offset );
 	}
-
 }

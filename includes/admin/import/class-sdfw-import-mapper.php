@@ -11,6 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Import field mapper.
+ */
 final class SDFW_Import_Mapper {
 
 	/**
@@ -45,14 +48,17 @@ final class SDFW_Import_Mapper {
 	 * Constructor.
 	 */
 	public function __construct() {
-		$this->allowed_fields = apply_filters( 'stockdesk_allowed_import_fields', array(
-			'sku'                 => __( 'SKU (Match Key)', 'stockdesk-for-woocommerce' ),
-			'manage_stock'        => __( 'Manage Stock', 'stockdesk-for-woocommerce' ),
-			'stock_quantity'      => __( 'Stock Quantity', 'stockdesk-for-woocommerce' ),
-			'stock_status'        => __( 'Stock Status', 'stockdesk-for-woocommerce' ),
-			'backorders'          => __( 'Backorders', 'stockdesk-for-woocommerce' ),
-			'low_stock_threshold' => __( 'Low Stock Threshold', 'stockdesk-for-woocommerce' ),
-		) );
+		$this->allowed_fields = apply_filters(
+			'stockdesk_allowed_import_fields',
+			array(
+				'sku'                 => __( 'SKU (Match Key)', 'stockdesk-for-woocommerce' ),
+				'manage_stock'        => __( 'Manage Stock', 'stockdesk-for-woocommerce' ),
+				'stock_quantity'      => __( 'Stock Quantity', 'stockdesk-for-woocommerce' ),
+				'stock_status'        => __( 'Stock Status', 'stockdesk-for-woocommerce' ),
+				'backorders'          => __( 'Backorders', 'stockdesk-for-woocommerce' ),
+				'low_stock_threshold' => __( 'Low Stock Threshold', 'stockdesk-for-woocommerce' ),
+			)
+		);
 	}
 
 	/**

@@ -11,6 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * CSV parser for imports.
+ */
 final class SDFW_Import_Csv_Parser {
 
 	/**
@@ -52,10 +55,10 @@ final class SDFW_Import_Csv_Parser {
 		for ( $i = 0; $i < $length; $i++ ) {
 			$char = $line[ $i ];
 
-			if ( $char === '"' ) {
-				if ( $in_quote && $i + 1 < $length && $line[ $i + 1 ] === '"' ) {
+			if ( '"' === $char ) {
+				if ( $in_quote && $i + 1 < $length && '"' === $line[ $i + 1 ] ) {
 					$field .= '"';
-					$i++;
+					++$i;
 				} else {
 					$in_quote = ! $in_quote;
 				}
@@ -100,7 +103,12 @@ final class SDFW_Import_Csv_Parser {
 		$headers = $this->parse_csv_line( array_shift( $lines ), $delimiter );
 		$headers = array_map(
 			function ( $header, $index ) {
-				return $header ?: sprintf( /* translators: %d: Column number */ __( 'Column %d', 'stockdesk-for-woocommerce' ), $index + 1 );
+				if ( $header ) {
+					return $header;
+				}
+
+				/* translators: %d: Column number */
+				return sprintf( __( 'Column %d', 'stockdesk-for-woocommerce' ), $index + 1 );
 			},
 			$headers,
 			array_keys( $headers )
@@ -108,7 +116,7 @@ final class SDFW_Import_Csv_Parser {
 
 		$rows = array();
 		foreach ( $lines as $line ) {
-			$row = $this->parse_csv_line( $line, $delimiter );
+			$row    = $this->parse_csv_line( $line, $delimiter );
 			$row    = array_pad( $row, count( $headers ), '' );
 			$row    = array_slice( $row, 0, count( $headers ) );
 			$rows[] = $row;

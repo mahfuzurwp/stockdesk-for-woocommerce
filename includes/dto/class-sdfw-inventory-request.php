@@ -11,6 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Inventory request DTO.
+ */
 final class SDFW_Inventory_Request {
 
 	/**
@@ -87,6 +90,7 @@ final class SDFW_Inventory_Request {
 	 * @return self
 	 */
 	public static function from_get(): self {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only filter state, sanitized field-by-field in the constructor above.
 		return new self( $_GET );
 	}
 

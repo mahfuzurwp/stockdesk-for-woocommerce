@@ -11,6 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Low stock threshold resolver.
+ */
 final class SDFW_Low_Stock_Resolver {
 
 	/**

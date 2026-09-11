@@ -11,6 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Import validator.
+ */
 final class SDFW_Import_Validator {
 
 	/**
@@ -61,7 +64,7 @@ final class SDFW_Import_Validator {
 	 * @return array<string> Errors.
 	 */
 	public function validate_mapping( array $sanitized_mapping ): array {
-		$errors = array();
+		$errors         = array();
 		$allowed_fields = SDFW_Import_Mapper::instance()->get_allowed_fields();
 
 		if ( empty( $sanitized_mapping['sku'] ) ) {
@@ -71,7 +74,7 @@ final class SDFW_Import_Validator {
 		$header_counts = array_count_values( array_filter( $sanitized_mapping ) );
 		foreach ( $header_counts as $header => $count ) {
 			if ( $count > 1 ) {
-				$fields = array_keys(
+				$fields       = array_keys(
 					array_filter(
 						$sanitized_mapping,
 						static function ( string $mapped_header ) use ( $header ): bool {
@@ -85,7 +88,7 @@ final class SDFW_Import_Validator {
 					},
 					$fields
 				);
-				$errors[] = sprintf(
+				$errors[]     = sprintf(
 					/* translators: 1: CSV header, 2: field labels */
 					__( 'CSV column "%1$s" is assigned to multiple fields: %2$s.', 'stockdesk-for-woocommerce' ),
 					$header,
@@ -102,7 +105,7 @@ final class SDFW_Import_Validator {
 	 *
 	 * @param array<string, string> $mapping Field mapping.
 	 * @param array<int, string>    $headers CSV headers.
-	 * @param array<int, string>      $row     CSV row values.
+	 * @param array<int, string>    $row     CSV row values.
 	 * @return array{sku: string, row_data: array<string, string>, errors: array<int, string>, warnings: array<int, string>}
 	 */
 	public function parse_row( array $mapping, array $headers, array $row ): array {

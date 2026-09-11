@@ -11,6 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Inventory row save and bulk update handler.
+ */
 final class SDFW_Inventory_Handler {
 
 	/**
@@ -58,9 +61,9 @@ final class SDFW_Inventory_Handler {
 	 * Constructor.
 	 */
 	private function __construct() {
-		$this->product_service     = SDFW_Product_Service::instance();
-		$this->low_stock_resolver  = SDFW_Low_Stock_Resolver::instance();
-		$this->product_repository  = SDFW_Container::instance()->get( SDFW_Product_Repository::class );
+		$this->product_service    = SDFW_Product_Service::instance();
+		$this->low_stock_resolver = SDFW_Low_Stock_Resolver::instance();
+		$this->product_repository = SDFW_Container::instance()->get( SDFW_Product_Repository::class );
 	}
 
 	/**
@@ -113,12 +116,12 @@ final class SDFW_Inventory_Handler {
 		wp_send_json_success(
 			array(
 				'stockStatuses'           => $this->map_elements( $wc_stock_statuses ),
-				'stockStatusFilters'     => $this->map_elements( $stock_status_options ),
-				'productTypes'           => $this->map_elements( $product_type_options ),
-				'backorders'             => $this->map_elements( $wc_backorders ),
-				'categories'             => $this->get_term_elements( 'product_cat' ),
-				'brands'                 => $brand_taxonomy ? $this->get_term_elements( $brand_taxonomy ) : array(),
-				'globalLowStockThreshold'=> $this->low_stock_resolver->get_global_threshold(),
+				'stockStatusFilters'      => $this->map_elements( $stock_status_options ),
+				'productTypes'            => $this->map_elements( $product_type_options ),
+				'backorders'              => $this->map_elements( $wc_backorders ),
+				'categories'              => $this->get_term_elements( 'product_cat' ),
+				'brands'                  => $brand_taxonomy ? $this->get_term_elements( $brand_taxonomy ) : array(),
+				'globalLowStockThreshold' => $this->low_stock_resolver->get_global_threshold(),
 			)
 		);
 	}
@@ -131,6 +134,7 @@ final class SDFW_Inventory_Handler {
 	public function ajax_list(): void {
 		$this->verify_ajax_request();
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce and capability verified above via verify_ajax_request(); decoded and sanitized field-by-field in filters_from_view() below.
 		$view_raw = isset( $_POST['view'] ) ? wp_unslash( $_POST['view'] ) : '';
 		$view     = is_string( $view_raw ) ? json_decode( $view_raw, true ) : null;
 		if ( ! is_array( $view ) ) {
@@ -150,7 +154,7 @@ final class SDFW_Inventory_Handler {
 			);
 		}
 
-		$items      = array();
+		$items         = array();
 		$stock_options = SDFW_Stock_Options::instance();
 		$type_labels   = $stock_options->get_product_type_options();
 
@@ -177,9 +181,11 @@ final class SDFW_Inventory_Handler {
 	public function ajax_save_row(): void {
 		$this->verify_ajax_request();
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce and capability verified above via verify_ajax_request().
 		$product_id = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
-		$data_raw   = isset( $_POST['data'] ) ? wp_unslash( $_POST['data'] ) : '';
-		$data       = is_string( $data_raw ) ? json_decode( $data_raw, true ) : null;
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Verified above; decoded JSON is validated field-by-field in apply_row_update() below.
+		$data_raw = isset( $_POST['data'] ) ? wp_unslash( $_POST['data'] ) : '';
+		$data     = is_string( $data_raw ) ? json_decode( $data_raw, true ) : null;
 
 		if ( ! is_array( $data ) ) {
 			SDFW_Ajax_Response::send_error(
@@ -221,6 +227,7 @@ final class SDFW_Inventory_Handler {
 	public function ajax_bulk_update(): void {
 		$this->verify_ajax_request();
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce and capability verified above via verify_ajax_request(); every entry is coerced with absint() below.
 		$ids_raw = isset( $_POST['product_ids'] ) ? wp_unslash( $_POST['product_ids'] ) : '';
 		$ids     = is_string( $ids_raw ) ? json_decode( $ids_raw, true ) : null;
 		if ( ! is_array( $ids ) ) {
@@ -235,6 +242,7 @@ final class SDFW_Inventory_Handler {
 			);
 		}
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce and capability verified above via verify_ajax_request(); decoded JSON is validated field-by-field in apply_row_update() below.
 		$data_raw = isset( $_POST['data'] ) ? wp_unslash( $_POST['data'] ) : '';
 		$data     = is_string( $data_raw ) ? json_decode( $data_raw, true ) : null;
 		if ( ! is_array( $data ) || empty( $data ) ) {
@@ -301,7 +309,7 @@ final class SDFW_Inventory_Handler {
 	 * @return void
 	 */
 	public function apply_row_update( WC_Product $product, array $data, bool $partial = false ): void {
-		$has = static function( string $key ) use ( $data, $partial ): bool {
+		$has = static function ( string $key ) use ( $data, $partial ): bool {
 			if ( ! array_key_exists( $key, $data ) ) {
 				return false;
 			}
@@ -401,7 +409,7 @@ final class SDFW_Inventory_Handler {
 	/**
 	 * Hydrate a repository row into a DataViews item.
 	 *
-	 * @param array<string, mixed> $row         Repository row.
+	 * @param array<string, mixed>  $row         Repository row.
 	 * @param array<string, string> $type_labels Product type labels.
 	 * @return array<string, mixed>|null
 	 */

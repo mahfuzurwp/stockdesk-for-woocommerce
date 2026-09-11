@@ -1,6 +1,7 @@
 /.git
 /.gitignore
 /.distignore
+/.phpcs.xml.dist
 /.DS_Store
 /node_modules
 /src
