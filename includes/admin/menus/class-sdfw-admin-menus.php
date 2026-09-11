@@ -78,7 +78,10 @@ final class SDFW_Admin_Menus {
 	private function get_menu_icon(): string {
 		$path = SDFW_PLUGIN_PATH . 'assets/icon-admin-menu.svg';
 		if ( file_exists( $path ) ) {
-			return 'data:image/svg+xml;base64,' . base64_encode( (string) file_get_contents( $path ) );
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local plugin asset, not a remote URL; wp_remote_get() does not apply.
+			$icon = (string) file_get_contents( $path );
+			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Encodes a bundled SVG into a data: URI for add_menu_page(); not obfuscating logic.
+			return 'data:image/svg+xml;base64,' . base64_encode( $icon );
 		}
 		return 'dashicons-products';
 	}

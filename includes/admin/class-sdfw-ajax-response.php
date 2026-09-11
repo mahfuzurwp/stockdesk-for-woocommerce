@@ -11,6 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Shared admin-ajax JSON error responses.
+ */
 final class SDFW_Ajax_Response {
 
 	/**

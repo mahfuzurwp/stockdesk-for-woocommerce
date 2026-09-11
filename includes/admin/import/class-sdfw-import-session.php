@@ -11,6 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Import session manager.
+ */
 final class SDFW_Import_Session {
 
 	/**
@@ -56,10 +59,10 @@ final class SDFW_Import_Session {
 		set_transient( $transient_key, $session_data, self::TRANSIENT_EXPIRATION );
 
 		return array(
-			'session_id'   => $session_id,
-			'headers'      => $parsed['headers'],
-			'sample_rows'  => array_slice( $parsed['rows'], 0, 3 ),
-			'delimiter'    => $parsed['delimiter'],
+			'session_id'  => $session_id,
+			'headers'     => $parsed['headers'],
+			'sample_rows' => array_slice( $parsed['rows'], 0, 3 ),
+			'delimiter'   => $parsed['delimiter'],
 		);
 	}
 
@@ -146,12 +149,12 @@ final class SDFW_Import_Session {
 		$logs = $progress['logs'] ?? array();
 
 		foreach ( $results as $row_result ) {
-			$progress['processed']++;
+			++$progress['processed'];
 
 			if ( $row_result['success'] ) {
-				$progress['success']++;
+				++$progress['success'];
 			} else {
-				$progress['failed']++;
+				++$progress['failed'];
 			}
 
 			$logs[] = array(

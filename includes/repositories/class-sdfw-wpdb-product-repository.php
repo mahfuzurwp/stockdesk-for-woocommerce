@@ -11,6 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * WPDB-backed product repository.
+ */
 final class SDFW_WPDB_Product_Repository implements SDFW_Product_Repository {
 
 	/**
@@ -34,7 +37,7 @@ final class SDFW_WPDB_Product_Repository implements SDFW_Product_Repository {
 	 * @param SDFW_Brand_Taxonomy_Resolver $brand_resolver Brand taxonomy resolver.
 	 */
 	public function __construct( wpdb $db, SDFW_Brand_Taxonomy_Resolver $brand_resolver ) {
-		$this->db            = $db;
+		$this->db             = $db;
 		$this->brand_resolver = $brand_resolver;
 	}
 
@@ -47,11 +50,16 @@ final class SDFW_WPDB_Product_Repository implements SDFW_Product_Repository {
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @param array $filters  Filters.
+	 * @param int   $paged    Current page.
+	 * @param int   $per_page Per page.
+	 * @return array{items: array<int, array<string, mixed>>, total: int, error?: bool}
 	 */
 	public function get_inventory_items( array $filters, int $paged, int $per_page ): array {
 		$this->query_error = false;
-		$owner_expr = 'IF(p.post_parent > 0, p.post_parent, p.ID)';
-		$joins      = array(
+		$owner_expr        = 'IF(p.post_parent > 0, p.post_parent, p.ID)';
+		$joins             = array(
 			" LEFT JOIN {$this->db->posts} parent ON parent.ID = p.post_parent ",
 			" LEFT JOIN {$this->db->postmeta} pm_sku ON pm_sku.post_id = p.ID AND pm_sku.meta_key = '_sku' ",
 			" LEFT JOIN {$this->db->term_relationships} tr_cat ON tr_cat.object_id = {$owner_expr} ",
@@ -60,11 +68,11 @@ final class SDFW_WPDB_Product_Repository implements SDFW_Product_Repository {
 			" LEFT JOIN {$this->db->term_taxonomy} tt_type ON tt_type.term_taxonomy_id = tr_type.term_taxonomy_id AND tt_type.taxonomy = 'product_type' ",
 			" LEFT JOIN {$this->db->terms} t_type ON t_type.term_id = tt_type.term_id ",
 		);
-		$where      = array(
+		$where             = array(
 			" p.post_type IN ('product', 'product_variation') ",
 			" p.post_status IN ('publish', 'private') ",
 		);
-		$params     = array();
+		$params            = array();
 
 		if ( ! empty( $filters['category'] ) ) {
 			$where[]  = 'tt_cat.term_id = %d';
@@ -89,11 +97,11 @@ final class SDFW_WPDB_Product_Repository implements SDFW_Product_Repository {
 		}
 
 		if ( ! empty( $filters['search'] ) ) {
-			$like      = '%' . $this->db->esc_like( $filters['search'] ) . '%';
-			$where[]   = '(p.post_title LIKE %s OR pm_sku.meta_value LIKE %s OR parent.post_title LIKE %s)';
-			$params[]  = $like;
-			$params[]  = $like;
-			$params[]  = $like;
+			$like     = '%' . $this->db->esc_like( $filters['search'] ) . '%';
+			$where[]  = '(p.post_title LIKE %s OR pm_sku.meta_value LIKE %s OR parent.post_title LIKE %s)';
+			$params[] = $like;
+			$params[] = $like;
+			$params[] = $like;
 		}
 
 		$sql_base = "
@@ -101,12 +109,12 @@ final class SDFW_WPDB_Product_Repository implements SDFW_Product_Repository {
 			" . implode( "\n", $joins ) . '
 			WHERE ' . implode( ' AND ', $where );
 
-		$list_sql = "
+		$list_sql = '
 			SELECT DISTINCT
 				p.ID as id,
 				p.post_type as post_type,
 				parent.post_title as parent_name
-			" . $sql_base . '
+			' . $sql_base . '
 			ORDER BY p.post_title ASC, p.ID DESC
 		';
 
@@ -131,7 +139,7 @@ final class SDFW_WPDB_Product_Repository implements SDFW_Product_Repository {
 			}
 
 			$item_ids = array_map(
-				static function( array $item ): int {
+				static function ( array $item ): int {
 					return (int) $item['id'];
 				},
 				$items
@@ -141,7 +149,7 @@ final class SDFW_WPDB_Product_Repository implements SDFW_Product_Repository {
 			$items = array_values(
 				array_filter(
 					$items,
-					function( array $item ) use ( $filters ): bool {
+					function ( array $item ) use ( $filters ): bool {
 						return $this->passes_stock_filter_by_meta( (int) $item['id'], $filters['stock_status'] );
 					}
 				)
@@ -173,7 +181,7 @@ final class SDFW_WPDB_Product_Repository implements SDFW_Product_Repository {
 		}
 
 		if ( $per_page > 0 ) {
-			$offset   = ( $paged - 1 ) * $per_page;
+			$offset    = ( $paged - 1 ) * $per_page;
 			$list_sql .= $this->db->prepare( ' LIMIT %d OFFSET %d ', $per_page, $offset );
 		}
 
@@ -194,11 +202,16 @@ final class SDFW_WPDB_Product_Repository implements SDFW_Product_Repository {
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @param array $filters Filters.
+	 * @param int   $limit   Limit (-1 for all).
+	 * @param int   $offset  Offset.
+	 * @return array<int, array<string, mixed>>
 	 */
 	public function get_products_for_export( array $filters, int $limit = -1, int $offset = 0 ): array {
 		$this->query_error = false;
-		$joins  = $this->build_export_joins( $filters );
-		$where  = $this->build_export_where( $filters );
+		$joins             = $this->build_export_joins( $filters );
+		$where             = $this->build_export_where( $filters );
 
 		$sql = "
 			SELECT DISTINCT
@@ -239,11 +252,14 @@ final class SDFW_WPDB_Product_Repository implements SDFW_Product_Repository {
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @param array $filters Filters.
+	 * @return int
 	 */
 	public function count_products_for_export( array $filters ): int {
 		$this->query_error = false;
-		$joins = $this->build_export_joins( $filters );
-		$where = $this->build_export_where( $filters );
+		$joins             = $this->build_export_joins( $filters );
+		$where             = $this->build_export_where( $filters );
 
 		$sql = "
 			SELECT COUNT(DISTINCT p.ID)
@@ -263,6 +279,9 @@ final class SDFW_WPDB_Product_Repository implements SDFW_Product_Repository {
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @param string $sku SKU.
+	 * @return int|null Product ID or null if not found.
 	 */
 	public function find_product_id_by_sku( string $sku ): ?int {
 		$product_id = $this->db->get_var(
@@ -275,6 +294,9 @@ final class SDFW_WPDB_Product_Repository implements SDFW_Product_Repository {
 		return $product_id ? (int) $product_id : null;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function had_query_error(): bool {
 		return $this->query_error;
 	}
@@ -385,7 +407,7 @@ final class SDFW_WPDB_Product_Repository implements SDFW_Product_Repository {
 		}
 
 		if ( ! empty( $filters['stock_status'] ) && 'all' !== $filters['stock_status'] ) {
-			$where[] = $this->db->prepare( "pm_status.meta_value = %s", $filters['stock_status'] );
+			$where[] = $this->db->prepare( 'pm_status.meta_value = %s', $filters['stock_status'] );
 		}
 
 		if ( ! empty( $filters['manage_stock'] ) && 'yes' === $filters['manage_stock'] ) {
@@ -419,12 +441,12 @@ final class SDFW_WPDB_Product_Repository implements SDFW_Product_Repository {
 	 * @return array
 	 */
 	private function enrich_export_data( array $products, array $filters ): array {
-		$parent_ids      = array();
-		$owner_ids       = array();
+		$parent_ids = array();
+		$owner_ids  = array();
 
 		foreach ( $products as $product ) {
-			$product_id = (int) $product['product_id'];
-			$parent_id  = (int) $product['parent_id'];
+			$product_id  = (int) $product['product_id'];
+			$parent_id   = (int) $product['parent_id'];
 			$owner_ids[] = $parent_id > 0 ? $parent_id : $product_id;
 
 			if ( $parent_id > 0 ) {
@@ -578,8 +600,8 @@ final class SDFW_WPDB_Product_Repository implements SDFW_Product_Repository {
 	/**
 	 * Determine if product passes stock filter.
 	 *
-	 * @param int     $product_id   Product ID.
-	 * @param string  $stock_filter Stock filter.
+	 * @param int    $product_id   Product ID.
+	 * @param string $stock_filter Stock filter.
 	 * @return bool
 	 */
 	private function passes_stock_filter_by_meta( int $product_id, string $stock_filter ): bool {
@@ -592,11 +614,11 @@ final class SDFW_WPDB_Product_Repository implements SDFW_Product_Repository {
 			return $status === $stock_filter;
 		}
 
-		$manage    = (string) get_post_meta( $product_id, '_manage_stock', true );
-		$qty_raw   = get_post_meta( $product_id, '_stock', true );
-		$qty       = '' === (string) $qty_raw ? null : (int) wc_stock_amount( $qty_raw );
-		$threshold = get_post_meta( $product_id, '_low_stock_amount', true );
-		$resolver  = SDFW_Low_Stock_Resolver::instance();
+		$manage     = (string) get_post_meta( $product_id, '_manage_stock', true );
+		$qty_raw    = get_post_meta( $product_id, '_stock', true );
+		$qty        = '' === (string) $qty_raw ? null : (int) wc_stock_amount( $qty_raw );
+		$threshold  = get_post_meta( $product_id, '_low_stock_amount', true );
+		$resolver   = SDFW_Low_Stock_Resolver::instance();
 		$used_limit = null !== $threshold && '' !== (string) $threshold ? (int) $threshold : $resolver->get_global_threshold();
 
 		return 'yes' === $manage && null !== $qty && $qty > 0 && $qty <= $used_limit;

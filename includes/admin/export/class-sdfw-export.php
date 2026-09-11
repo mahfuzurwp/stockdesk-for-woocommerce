@@ -11,6 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Export handler class.
+ */
 final class SDFW_Export {
 
 	/**
@@ -125,6 +128,7 @@ final class SDFW_Export {
 		wp_send_json_success(
 			array(
 				'filename' => $filename,
+				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Binary-safe transport encoding for the JSON response, not obfuscation; decoded client-side before download.
 				'content'  => base64_encode( $content ),
 			)
 		);
@@ -174,8 +178,8 @@ final class SDFW_Export {
 			);
 		}
 
-		$formatter = new SDFW_Export_Formatter();
-		$columns   = $formatter->get_preview_columns( $include_optional );
+		$formatter   = new SDFW_Export_Formatter();
+		$columns     = $formatter->get_preview_columns( $include_optional );
 		$column_list = array();
 
 		foreach ( $columns as $key => $label ) {
@@ -321,6 +325,7 @@ final class SDFW_Export {
 	 */
 	private function parse_filters_from_request( array $source = array() ): array {
 		if ( empty( $source ) ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce and capability verified in verify_ajax_request(), called by every caller of this method before request data is touched.
 			$source = $_POST;
 		}
 
@@ -400,7 +405,7 @@ final class SDFW_Export {
 
 		$filters['stock_status'] = isset( $raw['stock_status'] ) ? sanitize_text_field( $raw['stock_status'] ) : 'all';
 
-		$manage_stock_raw = $raw['manage_stock'] ?? null;
+		$manage_stock_raw        = $raw['manage_stock'] ?? null;
 		$filters['manage_stock'] = in_array( $manage_stock_raw, array( true, 'true', '1', 1, 'yes' ), true ) ? 'yes' : 'no';
 
 		$filters['min_stock'] = isset( $raw['min_stock'] ) && '' !== $raw['min_stock'] ? absint( $raw['min_stock'] ) : null;
@@ -408,18 +413,18 @@ final class SDFW_Export {
 		$filters['sku_list']  = isset( $raw['sku_list'] ) ? sanitize_textarea_field( $raw['sku_list'] ) : '';
 
 		if ( '' !== trim( $filters['sku_list'] ) ) {
-			$filters['product_type']    = 'all';
-			$filters['category']        = array();
-			$filters['brand']           = array();
-			$filters['tags']            = array();
-			$filters['product_status']  = array();
-			$filters['stock_status']    = 'all';
-			$filters['manage_stock']    = 'no';
-			$filters['min_stock']       = null;
-			$filters['max_stock']       = null;
+			$filters['product_type']   = 'all';
+			$filters['category']       = array();
+			$filters['brand']          = array();
+			$filters['tags']           = array();
+			$filters['product_status'] = array();
+			$filters['stock_status']   = 'all';
+			$filters['manage_stock']   = 'no';
+			$filters['min_stock']      = null;
+			$filters['max_stock']      = null;
 		}
 
-		$include_optional_raw = $raw['include_optional_columns'] ?? null;
+		$include_optional_raw                = $raw['include_optional_columns'] ?? null;
 		$filters['include_optional_columns'] = in_array( $include_optional_raw, array( true, 'true', '1', 1, 'yes' ), true );
 
 		$filters['csv_delimiter'] = isset( $raw['csv_delimiter'] ) && ';' === $raw['csv_delimiter'] ? ';' : ',';

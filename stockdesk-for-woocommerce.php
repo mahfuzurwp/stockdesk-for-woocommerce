@@ -11,6 +11,8 @@
  * Text Domain: stockdesk-for-woocommerce
  * Domain Path: /languages
  * Requires Plugins: woocommerce
+ *
+ * @package StockDesk for WooCommerce
  */
 
 declare(strict_types=1);

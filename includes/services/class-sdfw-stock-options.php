@@ -11,6 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Stock and product option definitions.
+ */
 final class SDFW_Stock_Options {
 
 	/**
@@ -55,11 +58,11 @@ final class SDFW_Stock_Options {
 	 */
 	public function get_product_type_options(): array {
 		return array(
-			'all'      => __( 'All types', 'stockdesk-for-woocommerce' ),
-			'simple'   => __( 'Simple', 'stockdesk-for-woocommerce' ),
-			'variable' => __( 'Variable', 'stockdesk-for-woocommerce' ),
-			'grouped'  => __( 'Grouped', 'stockdesk-for-woocommerce' ),
-			'external' => __( 'External', 'stockdesk-for-woocommerce' ),
+			'all'       => __( 'All types', 'stockdesk-for-woocommerce' ),
+			'simple'    => __( 'Simple', 'stockdesk-for-woocommerce' ),
+			'variable'  => __( 'Variable', 'stockdesk-for-woocommerce' ),
+			'grouped'   => __( 'Grouped', 'stockdesk-for-woocommerce' ),
+			'external'  => __( 'External', 'stockdesk-for-woocommerce' ),
 			'variation' => __( 'Variation', 'stockdesk-for-woocommerce' ),
 		);
 	}

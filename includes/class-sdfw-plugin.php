@@ -11,47 +11,56 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Register WordPress's built-in autoloader to load classes only when needed, eliminating manual requires
-spl_autoload_register(function (string $class): void {
-    // Only process classes belonging to this plugin to avoid conflicts
-    if (!str_starts_with($class, 'SDFW_')) {
-        return;
-    }
+/**
+ * Autoload plugin classes on demand instead of requiring every file up front.
+ *
+ * @param string $class_name Fully-qualified class name being resolved.
+ * @return void
+ */
+spl_autoload_register(
+	function ( string $class_name ): void {
+		// Only process classes belonging to this plugin to avoid conflicts.
+		if ( ! str_starts_with( $class_name, 'SDFW_' ) ) {
+			return;
+		}
 
-    // Map class names to their file paths matching our plugin's naming convention
-    $class_map = [
-        'SDFW_Container'                         => 'includes/class-sdfw-container.php',
-        'SDFW_Brand_Taxonomy_Resolver'           => 'includes/services/class-sdfw-brand-taxonomy-resolver.php',
-        'SDFW_Stock_Options'                     => 'includes/services/class-sdfw-stock-options.php',
-        'SDFW_Low_Stock_Resolver'                => 'includes/services/class-sdfw-low-stock-resolver.php',
-        'SDFW_Product_Service'                   => 'includes/services/class-sdfw-product-service.php',
-        'SDFW_Product_Repository'                => 'includes/repositories/interface-sdfw-product-repository.php',
-        'SDFW_WPDB_Product_Repository'           => 'includes/repositories/class-sdfw-wpdb-product-repository.php',
-        'SDFW_Inventory_Request'                 => 'includes/dto/class-sdfw-inventory-request.php',
-        'SDFW_Admin_App'                         => 'includes/admin/class-sdfw-admin-app.php',
-        'SDFW_Admin_Menus'                       => 'includes/admin/menus/class-sdfw-admin-menus.php',
-        'SDFW_Inventory_Handler'                 => 'includes/admin/inventory/class-sdfw-inventory-handler.php',
-        'SDFW_Export'                            => 'includes/admin/export/class-sdfw-export.php',
-        'SDFW_Export_Formatter'                  => 'includes/admin/export/class-sdfw-export-formatter.php',
-        'SDFW_Export_Query'                      => 'includes/admin/export/class-sdfw-export-query.php',
-        'SDFW_Import'                            => 'includes/admin/import/class-sdfw-import.php',
-        'SDFW_Import_Csv_Parser'                 => 'includes/admin/import/class-sdfw-import-csv-parser.php',
-        'SDFW_Import_Mapper'                     => 'includes/admin/import/class-sdfw-import-mapper.php',
-        'SDFW_Import_Validator'                  => 'includes/admin/import/class-sdfw-import-validator.php',
-        'SDFW_Import_Processor'                  => 'includes/admin/import/class-sdfw-import-processor.php',
-        'SDFW_Import_Session'                    => 'includes/admin/import/class-sdfw-import-session.php',
-        'SDFW_Ajax_Response'                     => 'includes/admin/class-sdfw-ajax-response.php',
-    ];
+		// Map class names to their file paths matching our plugin's naming convention.
+		$class_map = array(
+			'SDFW_Container'               => 'includes/class-sdfw-container.php',
+			'SDFW_Brand_Taxonomy_Resolver' => 'includes/services/class-sdfw-brand-taxonomy-resolver.php',
+			'SDFW_Stock_Options'           => 'includes/services/class-sdfw-stock-options.php',
+			'SDFW_Low_Stock_Resolver'      => 'includes/services/class-sdfw-low-stock-resolver.php',
+			'SDFW_Product_Service'         => 'includes/services/class-sdfw-product-service.php',
+			'SDFW_Product_Repository'      => 'includes/repositories/interface-sdfw-product-repository.php',
+			'SDFW_WPDB_Product_Repository' => 'includes/repositories/class-sdfw-wpdb-product-repository.php',
+			'SDFW_Inventory_Request'       => 'includes/dto/class-sdfw-inventory-request.php',
+			'SDFW_Admin_App'               => 'includes/admin/class-sdfw-admin-app.php',
+			'SDFW_Admin_Menus'             => 'includes/admin/menus/class-sdfw-admin-menus.php',
+			'SDFW_Inventory_Handler'       => 'includes/admin/inventory/class-sdfw-inventory-handler.php',
+			'SDFW_Export'                  => 'includes/admin/export/class-sdfw-export.php',
+			'SDFW_Export_Formatter'        => 'includes/admin/export/class-sdfw-export-formatter.php',
+			'SDFW_Import'                  => 'includes/admin/import/class-sdfw-import.php',
+			'SDFW_Import_Csv_Parser'       => 'includes/admin/import/class-sdfw-import-csv-parser.php',
+			'SDFW_Import_Mapper'           => 'includes/admin/import/class-sdfw-import-mapper.php',
+			'SDFW_Import_Validator'        => 'includes/admin/import/class-sdfw-import-validator.php',
+			'SDFW_Import_Processor'        => 'includes/admin/import/class-sdfw-import-processor.php',
+			'SDFW_Import_Session'          => 'includes/admin/import/class-sdfw-import-session.php',
+			'SDFW_Ajax_Response'           => 'includes/admin/class-sdfw-ajax-response.php',
+		);
 
-    // Load the file only if the class exists in our map and the file is readable
-    if (isset($class_map[$class])) {
-        $file_path = SDFW_PLUGIN_PATH . $class_map[$class];
-        if (is_readable($file_path)) {
-            require_once $file_path;
-        }
-    }
-});
+		// Load the file only if the class exists in our map and the file is readable.
+		if ( isset( $class_map[ $class_name ] ) ) {
+			$file_path = SDFW_PLUGIN_PATH . $class_map[ $class_name ];
+			if ( is_readable( $file_path ) ) {
+				require_once $file_path;
+			}
+		}
+	}
+);
 
+/**
+ * Main plugin bootstrap class.
+ */
 final class SDFW_Plugin {
 
 	/**
@@ -96,13 +105,16 @@ final class SDFW_Plugin {
 		$container->bind( SDFW_Stock_Options::class, fn() => SDFW_Stock_Options::instance() );
 		$container->bind( SDFW_Low_Stock_Resolver::class, fn() => SDFW_Low_Stock_Resolver::instance() );
 		$container->bind( SDFW_Product_Service::class, fn() => SDFW_Product_Service::instance() );
-		$container->bind( SDFW_Product_Repository::class, function () {
-			global $wpdb;
-			return new SDFW_WPDB_Product_Repository(
-				$wpdb,
-				SDFW_Brand_Taxonomy_Resolver::instance()
-			);
-		} );
+		$container->bind(
+			SDFW_Product_Repository::class,
+			function () {
+				global $wpdb;
+				return new SDFW_WPDB_Product_Repository(
+					$wpdb,
+					SDFW_Brand_Taxonomy_Resolver::instance()
+				);
+			}
+		);
 
 		add_action( 'init', array( $this, 'init_admin' ) );
 	}

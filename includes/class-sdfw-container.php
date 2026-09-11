@@ -11,6 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Simple service container for dependency injection.
+ */
 final class SDFW_Container {
 
 	/**
@@ -73,7 +76,7 @@ final class SDFW_Container {
 			return null;
 		}
 
-		$instance = call_user_func( $this->bindings[ $id ], $this );
+		$instance               = call_user_func( $this->bindings[ $id ], $this );
 		$this->instances[ $id ] = $instance;
 
 		return $instance;

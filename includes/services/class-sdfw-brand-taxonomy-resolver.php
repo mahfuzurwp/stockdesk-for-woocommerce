@@ -11,6 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Brand taxonomy resolver.
+ */
 final class SDFW_Brand_Taxonomy_Resolver {
 
 	/**

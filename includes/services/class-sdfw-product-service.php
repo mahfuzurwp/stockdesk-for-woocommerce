@@ -11,6 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * WooCommerce product service.
+ */
 final class SDFW_Product_Service {
 
 	/**
@@ -52,6 +55,7 @@ final class SDFW_Product_Service {
 	public function find_product_id_by_sku( string $sku ): ?int {
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- No core API resolves a product by SKU directly; the lookup must reflect live data, so it is intentionally not cached.
 		$product_id = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_sku' AND meta_value = %s LIMIT 1",
