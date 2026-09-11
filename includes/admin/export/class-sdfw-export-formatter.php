@@ -178,6 +178,29 @@ class SDFW_Export_Formatter {
 		if ( null === $value ) {
 			return '';
 		}
-		return (string) $value;
+
+		return $this->escape_formula( (string) $value );
+	}
+
+	/**
+	 * Neutralize CSV/spreadsheet formula injection.
+	 *
+	 * Values that start with =, +, -, @, tab, or carriage return are executed
+	 * as formulas by Excel/Sheets when the exported file is opened. Prefixing
+	 * with a single quote forces those applications to treat the cell as text.
+	 *
+	 * @param string $value Raw value.
+	 * @return string
+	 */
+	private function escape_formula( string $value ): string {
+		if ( '' === $value ) {
+			return $value;
+		}
+
+		if ( 1 === preg_match( '/^[=+\-@\t\r]/', $value ) ) {
+			return "'" . $value;
+		}
+
+		return $value;
 	}
 }

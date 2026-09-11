@@ -90,6 +90,7 @@ final class SDFW_Import {
 		$this->verify_nonce();
 		$this->verify_capability();
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce and capability verified above via verify_nonce()/verify_capability().
 		if ( ! isset( $_FILES['csv_file'] ) ) {
 			SDFW_Ajax_Response::send_error(
 				__( 'No file uploaded.', 'stockdesk-for-woocommerce' ),
@@ -97,6 +98,7 @@ final class SDFW_Import {
 			);
 		}
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Verified above; file upload data is validated (type/size/upload error) before use, not written directly.
 		$file = $_FILES['csv_file'];
 		$validator = SDFW_Import_Validator::instance();
 
@@ -173,7 +175,9 @@ final class SDFW_Import {
 		$this->verify_nonce();
 		$this->verify_capability();
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce and capability verified above via verify_nonce()/verify_capability().
 		$session_id = isset( $_POST['session_id'] ) ? sanitize_text_field( wp_unslash( $_POST['session_id'] ) ) : '';
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Verified above; decoded and sanitized field-by-field via SDFW_Import_Validator::sanitize_mapping() below.
 		$raw_mapping = isset( $_POST['mapping'] ) ? wp_unslash( $_POST['mapping'] ) : '';
 		$mapping     = is_string( $raw_mapping ) ? json_decode( $raw_mapping, true ) : (array) $raw_mapping;
 
@@ -229,6 +233,7 @@ final class SDFW_Import {
 		$this->verify_nonce();
 		$this->verify_capability();
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce and capability verified above via verify_nonce()/verify_capability().
 		$session_id = isset( $_POST['session_id'] ) ? sanitize_text_field( wp_unslash( $_POST['session_id'] ) ) : '';
 
 		if ( empty( $session_id ) ) {
@@ -318,6 +323,7 @@ final class SDFW_Import {
 			);
 		}
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce and capability verified above via verify_nonce()/verify_capability().
 		$session_id = isset( $_POST['session_id'] ) ? sanitize_text_field( wp_unslash( $_POST['session_id'] ) ) : '';
 
 		if ( empty( $session_id ) ) {
@@ -387,6 +393,7 @@ final class SDFW_Import {
 		$this->verify_nonce();
 		$this->verify_capability();
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce and capability verified above via verify_nonce()/verify_capability().
 		$session_id = isset( $_POST['session_id'] ) ? sanitize_text_field( wp_unslash( $_POST['session_id'] ) ) : '';
 
 		if ( empty( $session_id ) ) {

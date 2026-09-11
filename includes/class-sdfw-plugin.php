@@ -33,7 +33,6 @@ spl_autoload_register(function (string $class): void {
         'SDFW_Inventory_Handler'                 => 'includes/admin/inventory/class-sdfw-inventory-handler.php',
         'SDFW_Export'                            => 'includes/admin/export/class-sdfw-export.php',
         'SDFW_Export_Formatter'                  => 'includes/admin/export/class-sdfw-export-formatter.php',
-        'SDFW_Export_Query'                      => 'includes/admin/export/class-sdfw-export-query.php',
         'SDFW_Import'                            => 'includes/admin/import/class-sdfw-import.php',
         'SDFW_Import_Csv_Parser'                 => 'includes/admin/import/class-sdfw-import-csv-parser.php',
         'SDFW_Import_Mapper'                     => 'includes/admin/import/class-sdfw-import-mapper.php',

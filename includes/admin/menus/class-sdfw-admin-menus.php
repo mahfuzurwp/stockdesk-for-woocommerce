@@ -78,6 +78,7 @@ final class SDFW_Admin_Menus {
 	private function get_menu_icon(): string {
 		$path = SDFW_PLUGIN_PATH . 'assets/icon-admin-menu.svg';
 		if ( file_exists( $path ) ) {
+			// Base64 here encodes a bundled SVG into a data: URI for add_menu_page(); it is not obfuscating logic.
 			return 'data:image/svg+xml;base64,' . base64_encode( (string) file_get_contents( $path ) );
 		}
 		return 'dashicons-products';

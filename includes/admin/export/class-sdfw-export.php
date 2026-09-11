@@ -125,6 +125,7 @@ final class SDFW_Export {
 		wp_send_json_success(
 			array(
 				'filename' => $filename,
+				// Base64 here is a binary-safe transport encoding for the JSON response, not obfuscation; decoded client-side before download.
 				'content'  => base64_encode( $content ),
 			)
 		);
@@ -321,6 +322,7 @@ final class SDFW_Export {
 	 */
 	private function parse_filters_from_request( array $source = array() ): array {
 		if ( empty( $source ) ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce and capability verified in verify_ajax_request(), called by every caller of this method before request data is touched.
 			$source = $_POST;
 		}
 

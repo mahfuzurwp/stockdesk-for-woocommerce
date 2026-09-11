@@ -131,6 +131,7 @@ final class SDFW_Inventory_Handler {
 	public function ajax_list(): void {
 		$this->verify_ajax_request();
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce and capability verified above via verify_ajax_request(); decoded and sanitized field-by-field in filters_from_view() below.
 		$view_raw = isset( $_POST['view'] ) ? wp_unslash( $_POST['view'] ) : '';
 		$view     = is_string( $view_raw ) ? json_decode( $view_raw, true ) : null;
 		if ( ! is_array( $view ) ) {
@@ -177,7 +178,9 @@ final class SDFW_Inventory_Handler {
 	public function ajax_save_row(): void {
 		$this->verify_ajax_request();
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce and capability verified above via verify_ajax_request().
 		$product_id = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Verified above; decoded JSON is validated field-by-field in apply_row_update() below.
 		$data_raw   = isset( $_POST['data'] ) ? wp_unslash( $_POST['data'] ) : '';
 		$data       = is_string( $data_raw ) ? json_decode( $data_raw, true ) : null;
 
@@ -221,6 +224,7 @@ final class SDFW_Inventory_Handler {
 	public function ajax_bulk_update(): void {
 		$this->verify_ajax_request();
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce and capability verified above via verify_ajax_request(); every entry is coerced with absint() below.
 		$ids_raw = isset( $_POST['product_ids'] ) ? wp_unslash( $_POST['product_ids'] ) : '';
 		$ids     = is_string( $ids_raw ) ? json_decode( $ids_raw, true ) : null;
 		if ( ! is_array( $ids ) ) {
@@ -235,6 +239,7 @@ final class SDFW_Inventory_Handler {
 			);
 		}
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce and capability verified above via verify_ajax_request(); decoded JSON is validated field-by-field in apply_row_update() below.
 		$data_raw = isset( $_POST['data'] ) ? wp_unslash( $_POST['data'] ) : '';
 		$data     = is_string( $data_raw ) ? json_decode( $data_raw, true ) : null;
 		if ( ! is_array( $data ) || empty( $data ) ) {
