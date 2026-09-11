@@ -264,6 +264,7 @@ const ImportForm = () => {
 		if ( duplicateHeaders.length > 0 ) {
 			setValidationErrors( [
 				sprintf(
+					/* translators: %s: comma-separated list of duplicated CSV column headers */
 					__(
 						'Each CSV column can only be used once. Please review: %s',
 						'stockdesk-for-woocommerce'
@@ -585,6 +586,7 @@ const ImportForm = () => {
 				{ fileName && (
 					<Notice status="success" isDismissible={ false }>
 						{ sprintf(
+							/* translators: %s: uploaded file name */
 							__( 'Uploaded: %s', 'stockdesk-for-woocommerce' ),
 							fileName
 						) }
@@ -982,16 +984,18 @@ const ImportForm = () => {
 						<div className="sdfw-progress-text">
 							{ complete
 								? sprintf(
+										/* translators: 1: rows processed, 2: total rows */
 										__(
-											'Completed: %d/%d rows',
+											'Completed: %1$d/%2$d rows',
 											'stockdesk-for-woocommerce'
 										),
 										processed,
 										total
 								  )
 								: sprintf(
+										/* translators: 1: rows processed, 2: total rows, 3: percent complete */
 										__(
-											'Processing: %d/%d rows (%d%%)',
+											'Processing: %1$d/%2$d rows (%3$d%%)',
 											'stockdesk-for-woocommerce'
 										),
 										processed,
@@ -1057,6 +1061,7 @@ const ImportForm = () => {
 									>
 										<span className="sdfw-log-row">
 											{ sprintf(
+												/* translators: %d: CSV row number */
 												__(
 													'Row %d',
 													'stockdesk-for-woocommerce'
